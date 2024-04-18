@@ -81,35 +81,43 @@ pub type High4 = High<KIND4>;
 pub type High8 = High<KIND8>;
 pub type High16 = High<KIND16>;
 
-pub fn high2_from_raw(value: u32) -> High2 {
+pub fn high<const K: u32>(value: u32) -> High<K> {
+    High(value)
+}
+
+pub fn high_with_default<const K: u32>() -> High<K> {
+    High::with_default()
+}
+
+pub fn high2(value: u32) -> High2 {
     High::<KIND2>::from_raw(value)
 }
 
-pub const fn high2() -> High2 {
+pub const fn high2_with_default() -> High2 {
     High::<KIND2>::with_default()
 }
 
-pub const fn high4_from_raw(value: u32) -> High4 {
+pub const fn high4(value: u32) -> High4 {
     High::<KIND4>::from_raw(value)
 }
 
-pub const fn high4() -> High4 {
+pub const fn high4_with_default() -> High4 {
     High::<KIND4>::with_default()
 }
 
-pub const fn high8_from_raw(value: u32) -> High8 {
+pub const fn high8(value: u32) -> High8 {
     High::<KIND8>::from_raw(value)
 }
 
-pub const fn high8() -> High8 {
+pub const fn high8_with_default() -> High8 {
     High::<KIND8>::with_default()
 }
 
-pub const fn high16_from_raw(value: u32) -> High16 {
+pub const fn high16(value: u32) -> High16 {
     High::<KIND16>::from_raw(value)
 }
 
-pub const fn high16() -> High16 {
+pub const fn high16_with_default() -> High16 {
     High::<KIND16>::with_default()
 }
 
@@ -158,79 +166,81 @@ impl<const K: u32> Mul<Low> for High<K> {
 
 #[cfg(test)]
 mod tests {
+    use crate::kind;
+
     use super::*;
 
     #[test]
-    fn from_raw() {
-        let hi = high2_from_raw(10);
+    fn constructors() {
+        let hi = high2(10);
         assert_eq!(hi.0, 10);
 
-        let hi = high4_from_raw(10);
+        let hi = high4(10);
         assert_eq!(hi.0, 10);
 
-        let hi = high8_from_raw(10);
+        let hi = high8(10);
         assert_eq!(hi.0, 10);
 
-        let hi = high16_from_raw(10);
+        let hi = high16(10);
         assert_eq!(hi.0, 10);
     }
 
     #[test]
     fn with_default() {
-        let hi = high2();
+        let hi = high2_with_default();
         assert_eq!(hi.0, 1);
 
-        let hi = high4();
+        let hi = high4_with_default();
         assert_eq!(hi.0, 1);
 
-        let hi = high8();
+        let hi = high8_with_default();
         assert_eq!(hi.0, 1);
 
-        let hi = high16();
+        let hi = high16_with_default();
         assert_eq!(hi.0, 1);
     }
 
     #[test]
-    fn kind() {
-        let mut hi = high2_from_raw(10);
-        hi.set_kind(KindId(1));
+    fn test_kind() {
+        let mut hi = high2(10);
+        hi.set_kind(kind(1));
         assert_eq!(hi.kind().0, 1);
 
-        let mut hi = high4_from_raw(10);
-        hi.set_kind(KindId(3));
+        let mut hi = high4(10);
+        hi.set_kind(kind(3));
         assert_eq!(hi.kind().0, 3);
 
-        let mut hi = high8_from_raw(10);
-        hi.set_kind(KindId(7));
+        let mut hi = high8(10);
+        hi.set_kind(kind(7));
         assert_eq!(hi.kind().0, 7);
 
-        let mut hi = high16_from_raw(10);
-        hi.set_kind(KindId(15));
+        let mut hi = high16(10);
+        hi.set_kind(kind(15));
         assert_eq!(hi.kind().0, 15);
     }
 
     #[test]
     fn high() {
-        let mut hi = high2_from_raw(10);
-        hi.set_kind(KindId(1));
+        let mut hi = high2(10);
+        hi.set_kind(kind(1));
         hi.set_high(20);
         assert_eq!(hi.kind().0, 1);
         assert_eq!(hi.high(), 20);
 
-        let mut hi = high4_from_raw(10);
-        hi.set_kind(KindId(3));
+        let mut hi = high4(10);
+        hi.set_kind(kind(3));
         hi.set_high(20);
         assert_eq!(hi.kind().0, 3);
         assert_eq!(hi.high(), 20);
 
-        let mut hi = high8_from_raw(10);
-        hi.set_kind(KindId(7));
+        let mut hi = high8(10);
+        hi.set_kind(kind(7));
         hi.set_high(20);
         assert_eq!(hi.kind().0, 7);
         assert_eq!(hi.high(), 20);
 
-        let mut hi = high16_from_raw(10);
-        hi.set_kind(KindId(15));
+        let mut hi = high16(10);
+        hi.set_kind(kind(15));
         hi.set_high(20);
         assert_eq!(hi.kind().0, 15);
         assert_eq!(hi.high(), 20);
@@ -238,29 +248,29 @@ mod tests {
 
     #[test]
     fn unpack() {
-        let mut hi = high2_from_raw(10);
-        hi.set_kind(KindId(1));
+        let mut hi = high2(10);
+        hi.set_kind(kind(1));
         hi.set_high(20);
-        let (kind, high) = hi.unpack();
-        assert_eq!(kind.0, 1);
+        let (k, high) = hi.unpack();
+        assert_eq!(k.0, 1);
         assert_eq!(high, 20);
 
-        let mut hi = high4_from_raw(10);
-        hi.set_kind(KindId(3));
+        let mut hi = high4(10);
+        hi.set_kind(kind(3));
         hi.set_high(20);
-        let (kind, high) = hi.unpack();
-        assert_eq!(kind.0, 3);
+        let (k, high) = hi.unpack();
+        assert_eq!(k.0, 3);
         assert_eq!(high, 20);
 
-        let mut hi = high8_from_raw(10);
-        hi.set_kind(KindId(7));
+        let mut hi = high8(10);
+        hi.set_kind(kind(7));
         hi.set_high(20);
-        let (kind, high) = hi.unpack();
-        assert_eq!(kind.0, 7);
+        let (k, high) = hi.unpack();
+        assert_eq!(k.0, 7);
         assert_eq!(high, 20);
 
-        let mut hi = high16_from_raw(10);
-        hi.set_kind(KindId(15));
+        let mut hi = high16(10);
+        hi.set_kind(kind(15));
         hi.set_high(20);
         let (kind, high) = hi.unpack();
         assert_eq!(kind.0, 15);
@@ -269,29 +279,29 @@ mod tests {
 
     #[test]
     fn incr() {
-        let mut hi = high2_from_raw(10);
-        hi.set_kind(KindId(1));
+        let mut hi = high2(10);
+        hi.set_kind(kind(1));
         hi.set_high(20);
         hi.incr(10);
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high4_from_raw(10);
-        hi.set_kind(KindId(3));
+        let mut hi = high4(10);
+        hi.set_kind(kind(3));
         hi.set_high(20);
         hi.incr(10);
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high8_from_raw(10);
-        hi.set_kind(KindId(7));
+        let mut hi = high8(10);
+        hi.set_kind(kind(7));
         hi.set_high(20);
         hi.incr(10);
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high16_from_raw(10);
-        hi.set_kind(KindId(15));
+        let mut hi = high16(10);
+        hi.set_kind(kind(15));
         hi.set_high(20);
         hi.incr(10);
         let high = hi.high();
@@ -300,29 +310,29 @@ mod tests {
 
     #[test]
     fn add_value() {
-        let mut hi = high2_from_raw(10);
-        hi.set_kind(KindId(1));
+        let mut hi = high2(10);
+        hi.set_kind(kind(1));
         hi.set_high(20);
         let hi = hi + 10;
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high4_from_raw(10);
-        hi.set_kind(KindId(3));
+        let mut hi = high4(10);
+        hi.set_kind(kind(3));
         hi.set_high(20);
         let hi = hi + 10;
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high8_from_raw(10);
-        hi.set_kind(KindId(7));
+        let mut hi = high8(10);
+        hi.set_kind(kind(7));
         hi.set_high(20);
         let hi = hi + 10;
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high16_from_raw(10);
-        hi.set_kind(KindId(15));
+        let mut hi = high16(10);
+        hi.set_kind(kind(15));
         hi.set_high(20);
         let hi = hi + 10;
         let high = hi.high();
@@ -331,29 +341,29 @@ mod tests {
 
     #[test]
     fn add_assign_value() {
-        let mut hi = high2_from_raw(10);
-        hi.set_kind(KindId(1));
+        let mut hi = high2(10);
+        hi.set_kind(kind(1));
         hi.set_high(20);
         hi += 10;
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high4_from_raw(10);
-        hi.set_kind(KindId(3));
+        let mut hi = high4(10);
+        hi.set_kind(kind(3));
         hi.set_high(20);
         hi += 10;
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high8_from_raw(10);
-        hi.set_kind(KindId(7));
+        let mut hi = high8(10);
+        hi.set_kind(kind(7));
         hi.set_high(20);
         hi += 10;
         let high = hi.high();
         assert_eq!(high, 30);
 
-        let mut hi = high16_from_raw(10);
-        hi.set_kind(KindId(15));
+        let mut hi = high16(10);
+        hi.set_kind(kind(15));
         hi.set_high(20);
         hi += 10;
         let high = hi.high();
@@ -362,46 +372,46 @@ mod tests {
 
     #[test]
     fn add_kind() {
-        let hi = high2_from_raw(10);
-        let hi = hi + KindId(1);
+        let hi = high2(10);
+        let hi = hi + kind(1);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
 
-        let hi = high4_from_raw(10);
-        let hi = hi + KindId(3);
+        let hi = high4(10);
+        let hi = hi + kind(3);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
 
-        let hi = high8_from_raw(10);
-        let hi = hi + KindId(7);
+        let hi = high8(10);
+        let hi = hi + kind(7);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
 
-        let hi = high16_from_raw(10);
-        let hi = hi + KindId(15);
+        let hi = high16(10);
+        let hi = hi + kind(15);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
     }
 
     #[test]
     fn add_assign_kind() {
-        let mut hi = high2_from_raw(10);
-        hi += KindId(1);
+        let mut hi = high2(10);
+        hi += kind(1);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
 
-        let mut hi = high4_from_raw(10);
-        hi += KindId(3);
+        let mut hi = high4(10);
+        hi += kind(3);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
 
-        let mut hi = high8_from_raw(10);
-        hi += KindId(7);
+        let mut hi = high8(10);
+        hi += kind(7);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
 
-        let mut hi = high16_from_raw(10);
-        hi += KindId(15);
+        let mut hi = high16(10);
+        hi += kind(15);
         let hi = hi + 10;
         assert_eq!(hi.high(), 20);
     }
