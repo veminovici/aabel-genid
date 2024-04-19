@@ -22,6 +22,11 @@ impl<const K: u32> High<K> {
     }
 
     #[inline(always)]
+    pub const fn inner(&self) -> u32 {
+        self.0
+    }
+
+    #[inline(always)]
     const fn inner_pack_kind(high: u32, kind: u8) -> u32 {
         high | (kind as u32) << Self::KIND_MASK_MOVE
     }

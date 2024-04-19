@@ -6,8 +6,14 @@ use crate::{GenId, High, KindId};
 pub struct Low(pub(crate) u32);
 
 impl Low {
+    #[inline(always)]
     pub const fn from_raw(value: u32) -> Self {
         Self(value)
+    }
+
+    #[inline(always)]
+    pub const fn inner(&self) -> u32 {
+        self.0
     }
 }
 

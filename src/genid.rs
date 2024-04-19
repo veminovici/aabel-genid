@@ -1,6 +1,6 @@
-use std::ops::{Add, AddAssign};
-
 use crate::{High, KindId, Low, KIND16, KIND2, KIND4, KIND8};
+use std::hash::Hash;
+use std::ops::{Add, AddAssign};
 
 #[derive(Debug, Clone, Copy)]
 pub struct GenId<const K: u32> {
@@ -9,6 +9,13 @@ pub struct GenId<const K: u32> {
 }
 
 impl<const K: u32> GenId<K> {
+    #[inline(always)]
+    pub const fn to_u64(&self) -> u64 {
+        let high = self.high.inner();
+        let low = self.low.inner();
+        ((high as u64) << u32::BITS) | (low as u64)
+    }
+
     #[inline(always)]
     pub(crate) const fn from_low(low: Low) -> Self {
         Self {
@@ -56,6 +63,32 @@ impl<const K: u32> GenId<K> {
     #[inline(always)]
     pub fn incr(&mut self, value: u32) {
         self.high.incr(value)
+    }
+}
+
+impl<const K: u32> PartialEq for GenId<K> {
+    fn eq(&self, other: &Self) -> bool {
+        self.to_u64() == other.to_u64()
+    }
+}
+
+impl<const K: u32> Eq for GenId<K> {}
+
+impl<const K: u32> PartialOrd for GenId<K> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl<const K: u32> Ord for GenId<K> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.to_u64().cmp(&other.to_u64())
+    }
+}
+
+impl<const K: u32> Hash for GenId<K> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.to_u64().hash(state);
     }
 }
 
